@@ -1,0 +1,117 @@
+{% extends 'shop/basic.html' %}
+
+{% block title %}{{product.product_name}} --My Ecart {% endblock %}
+
+
+{% block body %}
+<div class="container my-3">
+
+    <div class="row">
+        <div class="col-md-4">
+
+            <div class="row">
+                <img src="/media//{{product.image}}" width="233px" height="385px">
+            </div>
+
+        </div>
+        <div class="col-md-8">
+
+            <h5 id="name{{i.id}}">{{product.product_name}}</h5>
+            <p><b>AED. {{product.price}}</b> only</p>
+            <p>{{product.product_desc}}</p>
+              <div class="row mt-3">
+            <button class="btn btn-primary mx-2"> Buy Now</button>
+            <button id="pr{{i.id}}" class="btn btn-primary cart mx-2 "> Add To Cart</button>
+        </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+{% block js %}
+<!-- This script is for cart adding and its concept written in js and jquery -->
+<script>
+
+    console.log("working")
+    if(localStorage.getItem('cart') == null)
+    {
+        var cart = {}
+    }
+    else
+    {
+        cart = JSON.parse(localStorage.getItem('cart'))
+        // it will update the cart item numbers//
+        document.getElementById('cart').innerHTML = Object.keys(cart).length
+    }
+    //jQuery starts here//
+    $('.cart').click(function(){
+        console.log('clicked')
+        var idstr = this.id.toString()
+        console.log(idstr)
+
+        if(cart[idstr] != undefined)
+        {
+            cart[idstr] = cart[idstr] + 1
+        }
+        else
+        {
+            cart[idstr] = 1
+        }
+        console.log(cart)
+        // this will not reset cart while reloading of page//
+        localStorage.setItem('cart', JSON.stringify(cart))
+        // it will update the cart item numbers//
+        document.getElementById('cart').innerHTML = Object.keys(cart).length
+        });
+
+$('#popcart').popover();
+updatePopover(cart)
+// document.getElementById("popcart").setAttribute('data-content', '<h5>Cart for your items in my shopping cart</h5>');
+//------------------------------------------------------------------------------------------//
+//----------This updatePopover() shows the product name and their quantity in the cart popover-----//
+        function updatePopover(cart)
+{
+    
+    var popStr = ""
+    popStr = popStr + "<h5> Cart for your items in my shopping cart </h5><div class='mx-2 my-2'>";
+    var i = 1;
+    for (var item in cart){
+        popStr = popStr + "<b>" + i + "</b>. ";
+         
+        popStr = popStr + document.getElementById('name'+item).innerHTML.slice(0, 19) + "... Qty: " + cart[item][0] + '<br>'
+       
+        i = i+1;
+    }
+    popStr = popStr + "</div> <a href = '/shop/checkout'>  <button class = 'btn btn-primary' id = 'checkout' >Checkout</button></a> <button class = 'btn btn-primary' onclick = 'clearCart()' id = 'clearcart' >Clear Cart</button>     " 
+    
+    document.getElementById('popcart').setAttribute('data-content', popStr);
+    $('#popcart').popover('show');
+}
+
+//---------------------------------------------------------------------------------------------------//
+
+//---This clearCart() will clear the cart//
+
+function clearCart()
+{
+    cart = JSON.parse(localStorage.getItem('cart'))
+    for(var item in cart)
+    {
+        document.getElementById('div' + item).innerHTML = '<button id = "'+ item +'" class="btn btn-primary cart">Add To Cart</button>'
+    }
+    localStorage.clear()
+    cart = {}
+    updatecart(cart)
+}
+
+
+
+//----------------------------------------------------------------------------------
+
+
+
+</script>
+
+{% endblock %}
